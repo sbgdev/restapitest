@@ -1,26 +1,36 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-interface WeatherData{
-    temperature: number | null,
-    humidity: number | null
-}
+interface SensorData {
+    temperature: number | null;
+    humidity: number | null;
+    rain: number | null;
+    soilMoisture: number | null;
+    gas: number | null;
+    motionDetected: number | null;
+    touch: number | null;
+  }
 
-let weatherData: WeatherData = {temperature: null, humidity: null};
+  let sensorData: SensorData = {
+    temperature: null,
+    humidity: null,
+    rain: null,
+    soilMoisture: null,
+    gas: null,
+    motionDetected: null,
+    touch: null,
+  };
 export const GET = async () => {
-    return new NextResponse(JSON.stringify(weatherData),{status: 200});
+    return new NextResponse(JSON.stringify(sensorData),{status: 200});
 }
 
 export const POST = async (request: NextRequest) => { 
     try {
-        const {temperature, humidity} = await request.json();
-        
-        if(typeof temperature === 'number' && typeof humidity === "number") {
-            weatherData = {temperature, humidity}
-            return new NextResponse(JSON.stringify(weatherData),{status: 200})
-        } else {
-            return new NextResponse("Invalid temperature data",{status: 400})
-        }
+        const data = await request.json();
+        sensorData = { ...data };
+
+
+        return new NextResponse(JSON.stringify(sensorData),{status: 200})
     } catch (error: any) {
         return new NextResponse("Failed to parse request data" + error.message,{status: 500})
     }
