@@ -1,22 +1,23 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-interface TemperatureData{
-    temperature: number | null
+interface WeatherData{
+    temperature: number | null,
+    humidity: number | null
 }
 
-let temperatureData: TemperatureData = {temperature: null};
+let weatherData: WeatherData = {temperature: null, humidity: null};
 export const GET = async () => {
-    return new NextResponse(JSON.stringify(temperatureData),{status: 200});
+    return new NextResponse(JSON.stringify(weatherData),{status: 200});
 }
 
 export const POST = async (request: NextRequest) => { 
     try {
-        const {temperature} = await request.json();
+        const {temperature, humidity} = await request.json();
         
-        if(typeof temperature === 'number'){
-            temperatureData.temperature = temperature;
-            return new NextResponse(JSON.stringify(temperatureData),{status: 200})
+        if(typeof temperature === 'number' && typeof humidity === "number") {
+            weatherData = {temperature, humidity}
+            return new NextResponse(JSON.stringify(weatherData),{status: 200})
         } else {
             return new NextResponse("Invalid temperature data",{status: 400})
         }

@@ -2,26 +2,35 @@
 
 import { useState, useEffect } from 'react';
 
-export default function TemperatureDisplay() {
-  const [temperature, setTemperature] = useState<number | null>(null);
+export default function WeatherDisplay() {
+    const [weather, setWeather] = useState<{
+        temperature: number | null,
+        humidity: number | null
+    }>({
+      temperature: null,
+      humidity: null
+  })
 
   useEffect(() => {
-    const fetchTemperature = async () => {
+    const fetchWeather = async () => {
       try {
         const response = await fetch('/api/temperature');
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
-        setTemperature(data.temperature);
+          setWeather({
+              temperature: data.temperature,
+              humidity: data.humidity
+        });
       } catch (error) {
         console.error('Failed to fetch temperature:', error);
       }
     };
 
     // Fetch temperature data every 3 seconds
-    const intervalId = setInterval(fetchTemperature, 3000);
+    const intervalId = setInterval(fetchWeather, 3000);
 
     // Initial fetch
-    fetchTemperature();
+    fetchWeather();
 
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);
@@ -29,12 +38,9 @@ export default function TemperatureDisplay() {
 
   return (
     <div>
-      <h1>Current Temperature</h1>
-      {temperature !== null ? (
-        <p>{temperature} °C</p>
-      ) : (
-        <p>Loading...</p>
-      )}
-    </div>
+    <h1>Current Weather</h1>
+    <p>Temperature: {weather.temperature !== null ? `${weather.temperature} °C` : 'Loading...'}</p>
+    <p>Humidity: {weather.humidity !== null ? `${weather.humidity} %` : 'Loading...'}</p>
+  </div>
   );
 }
