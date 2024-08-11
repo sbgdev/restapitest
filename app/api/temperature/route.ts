@@ -1,21 +1,27 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export const GET = async (request:Request) => {
+interface TemperatureData{
+    temperature: number | null
+}
+
+let temperatureData: TemperatureData = {temperature: null};
+export const GET = async () => {
+    return new NextResponse(JSON.stringify(temperatureData),{status: 200});
+}
+
+export const POST = async (request: NextRequest) => { 
     try {
-        const data = await request.json();
-        return new NextResponse(JSON.stringify(data),{status: 200})
+        const {temperature} = await request.json();
+        
+        if(typeof temperature === 'number'){
+            temperatureData.temperature = temperature;
+            return new NextResponse(JSON.stringify(temperatureData),{status: 200})
+        } else {
+            return new NextResponse("Invalid temperature data",{status: 400})
+        }
     } catch (error: any) {
-        return new NextResponse("Error in fetching users" + error.message, {
-            status: 500
-        } )
+        return new NextResponse("Failed to parse request data" + error.message,{status: 500})
     }
 }
 
-export const POST = async (request:Request) => { 
-    try {
-        const body = await request.json()
-        return new NextResponse(JSON.stringify(body),{status: 200})
-    } catch (error:any) {
-        return new NextResponse("Error in creating user"+ error.message,{status:500})
-    }
-}
